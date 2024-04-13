@@ -9,7 +9,7 @@ mod db;
 
 #[tokio::main]
 async fn main() {
-    let database = db::connect("mongodb://localhost:27017").await.expect("Failed to connect to database.");
+    let database = db::connect().await.expect("Failed to connect to database.");
 
     let matches = Command::new("LemCom-CLI")
         .about("A simple CLI for administrative tasks involving lemcom-api.")
