@@ -1,4 +1,4 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{collections::HashMap, time::{SystemTime, UNIX_EPOCH}};
 use mongodb::{bson::doc, error::Error, Database};
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
@@ -10,7 +10,10 @@ pub struct User {
     pub name: String,
     pub display_name: String,
     pub created_stamp: u64,
-    pub last_access_stamp: u64
+    pub last_access_stamp: u64,
+    pub endpoint_usage: HashMap<String, u64>,
+    pub join_date_public: bool,
+    pub online_date_public: bool
 }
 
 pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -35,8 +38,11 @@ pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Bo
         key: key.clone(),
         name: name.clone(),
         display_name: name,
-        created_stamp: timestamp_now_micro(),
-        last_access_stamp: 0
+        created_stamp: timestamp_now_nanos(),
+        last_access_stamp: 0,
+        endpoint_usage: HashMap::new(),
+        join_date_public: true,
+        online_date_public: true
     };
 
     collection.insert_one(user, None).await?;
@@ -44,8 +50,8 @@ pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Bo
     Ok(())
 }
 
-pub fn timestamp_now_micro() -> u64 {
+pub fn timestamp_now_nanos() -> u64 {
     let start_time = SystemTime::now();
     let since_unix = start_time.duration_since(UNIX_EPOCH).expect("Somehow the time went backwards...");
-    since_unix.as_micros() as u64
+    since_unix.as_nanos() as u64
 }
