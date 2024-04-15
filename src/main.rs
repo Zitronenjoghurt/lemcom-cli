@@ -1,7 +1,7 @@
-use clap::{Arg, Command};
 use crate::commands::crtusr;
+use clap::{Arg, Command};
 
-#[path ="./commands"]
+#[path = "./commands"]
 mod commands {
     pub mod crtusr;
 }
@@ -14,12 +14,12 @@ async fn main() {
     let matches = Command::new("LemCom-CLI")
         .about("A simple CLI for administrative tasks involving lemcom-api.")
         .subcommand(
-            Command::new("crtusr")
-                .about("Creates a new user")
-                .arg(Arg::new("username")
-                     .help("Specifies the username for the new user")
-                     .required(true)
-                     .index(1))
+            Command::new("crtusr").about("Creates a new user").arg(
+                Arg::new("username")
+                    .help("Specifies the username for the new user")
+                    .required(true)
+                    .index(1),
+            ),
         )
         .get_matches();
 
@@ -29,7 +29,7 @@ async fn main() {
             if let Err(e) = crtusr::execute(database, username).await {
                 println!("Failed to generate user: {}", e);
             }
-        },
+        }
         _ => println!("Invalid command or missing arguments"),
     }
 }

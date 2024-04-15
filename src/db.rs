@@ -1,8 +1,8 @@
 extern crate dotenv;
 
 use dotenv::dotenv;
+use mongodb::{options::ClientOptions, Client, Database};
 use std::env;
-use mongodb::{Client, options::ClientOptions, Database};
 use tokio::sync::RwLock;
 
 pub async fn connect() -> Result<RwLock<Database>, Box<dyn std::error::Error>> {

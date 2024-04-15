@@ -1,6 +1,9 @@
-use std::{collections::HashMap, time::{SystemTime, UNIX_EPOCH}};
 use mongodb::{bson::doc, error::Error, Database};
 use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    time::{SystemTime, UNIX_EPOCH},
+};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -13,13 +16,16 @@ pub struct User {
     pub last_access_stamp: u64,
     pub endpoint_usage: HashMap<String, u64>,
     pub join_date_public: bool,
-    pub online_date_public: bool
+    pub online_date_public: bool,
 }
 
-pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn execute(
+    database: RwLock<Database>,
+    username: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let database = database.read().await;
     let collection = database.collection::<User>("users");
-    
+
     let key = Uuid::new_v4().simple().to_string();
     let name = username.to_string().to_lowercase();
 
@@ -31,7 +37,9 @@ pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Bo
         .await?;
 
     if name_exists > 0 || key_exists > 0 {
-        return Err(Box::new(Error::custom("User with same key or name already exists")));
+        return Err(Box::new(Error::custom(
+            "User with same key or name already exists",
+        )));
     }
 
     let user = User {
@@ -42,7 +50,7 @@ pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Bo
         last_access_stamp: 0,
         endpoint_usage: HashMap::new(),
         join_date_public: true,
-        online_date_public: true
+        online_date_public: true,
     };
 
     collection.insert_one(user, None).await?;
@@ -52,6 +60,8 @@ pub async fn execute(database: RwLock<Database>,username: &str) -> Result<(), Bo
 
 pub fn timestamp_now_nanos() -> u64 {
     let start_time = SystemTime::now();
-    let since_unix = start_time.duration_since(UNIX_EPOCH).expect("Somehow the time went backwards...");
+    let since_unix = start_time
+        .duration_since(UNIX_EPOCH)
+        .expect("Somehow the time went backwards...");
     since_unix.as_nanos() as u64
 }
