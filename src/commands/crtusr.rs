@@ -1,9 +1,6 @@
 use mongodb::{bson::doc, error::Error, Database};
 use serde::{Deserialize, Serialize};
-use std::{
-    collections::HashMap,
-    time::{SystemTime, UNIX_EPOCH},
-};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -13,8 +10,6 @@ pub struct User {
     pub name: String,
     pub display_name: String,
     pub created_stamp: u64,
-    pub last_access_stamp: u64,
-    pub endpoint_usage: HashMap<String, u64>,
 }
 
 pub async fn execute(
@@ -45,8 +40,6 @@ pub async fn execute(
         name: name.clone(),
         display_name: name,
         created_stamp: timestamp_now_nanos(),
-        last_access_stamp: 0,
-        endpoint_usage: HashMap::new(),
     };
 
     collection.insert_one(user, None).await?;
