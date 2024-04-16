@@ -15,8 +15,6 @@ pub struct User {
     pub created_stamp: u64,
     pub last_access_stamp: u64,
     pub endpoint_usage: HashMap<String, u64>,
-    pub join_date_public: bool,
-    pub online_date_public: bool,
 }
 
 pub async fn execute(
@@ -49,8 +47,6 @@ pub async fn execute(
         created_stamp: timestamp_now_nanos(),
         last_access_stamp: 0,
         endpoint_usage: HashMap::new(),
-        join_date_public: true,
-        online_date_public: true,
     };
 
     collection.insert_one(user, None).await?;
